@@ -1,47 +1,119 @@
+"""
+    SNPCircuit
+
+A module providing structs and functions to handle a 
+circuit composed of Spiking Neural P-Systems (SN P-System) based
+neurons
+
+"""
 module SNPCircuit
+
     # Library required when generating a random network
     using Random
 
-    # Structs and functions to be exported to the user
-    export Neuron, LayerOfNeurons, CircuitOfNeurons, EvaluateCircuitOfNeurons, GenerateRandomNetwork, NumberOfLayers, NumberOfNeurons
-
-    # A neuron represents the unitary entity bla bla
+    # Structs and functions that are exported to the user
+    export Neuron, 
+           LayerOfNeurons, 
+           CircuitOfNeurons, 
+           EvaluateCircuitOfNeurons, 
+           GenerateRandomCircuit, 
+           GenerateRandomNeuron,
+           NumberOfLayers, 
+           NumberOfNeurons
+           
+    """
+    Neuron
+       
+    A struct representing a SN P-System neuron
+       
+    # Fields
+    - `rules::Vector{UInt16}`: The set of rules of the neuron.
+    - `input_lines::Vector{UInt16}`: The set of input lines connected to the neuron
+    - `number_of_spikes::UInt32`: The number of spikes contained in the neuron
+    """
     mutable struct Neuron
-        rules::Vector{UInt32}
-        input_lines::Vector{Int32}
-        number_of_spikes::UInt64
+        rules::Vector{UInt16}
+        input_lines::Vector{UInt16}
+        number_of_spikes::UInt32
     end
 
-    # A layer of neurons is just a list of neurons, each containing its own rules,
-    # its input lines and its own number of spikes. Each neuron takes its inputs
-    # from the previous layer; similarly, the output values computed will be taken
-    # by the neurons in the next layer, hence it is not necessary to explicitly
-    # duplicate the output values produced by the neurons.
+
+    """
+    LayerOfNeurons
+       
+    A layer of neurons is just a list of neurons, each containing
+    its own rules, its input lines and its own number of spikes. Each
+    neuron takes its inputs from the previous layers; similarly, the output
+    values computed will be taken by the neurons in the next layer, hence it
+    is not necessary to explicitly duplicate the output values produced by
+    the neurons.
+       
+    # Fields
+    - `neurons::Vector{Neuron}`: The sequence of neurons
+    """
     mutable struct LayerOfNeurons
         neurons::Vector{Neuron}
     end
 
-    # A spiking neural circuit is a list of layers of neurons. The output produced
-    # by 
+    
+    """
+    CircuitOfNeurons
+       
+    A circuit of neurons is just a sequence of layers
+       
+    # Fields
+    - `layers::Vector{LayerOfNeurons}`: The sequence of layers
+    """
     mutable struct CircuitOfNeurons
         layers::Vector{LayerOfNeurons}
     end
 
-    # Getter for the number of neurons in a layer
+
+    """
+    NumberOfLayers(circuit)
+
+    Returns the number of layers of a given circuit
+
+    # Arguments
+    - `circuit::CircuitOfNeurons`: The considered circuit.
+
+    # Returns
+    - `Int`: The number of layers of the circuit`.
+    """
     function NumberOfLayers(circuit::CircuitOfNeurons)
-        return length(circuit.layers)
+        return UInt16(length(circuit.layers))
     end
 
-    # Getter for the number of neurons in a layer
+
+    """
+    NumberOfNeurons(layer)
+
+    Returns the number of neurons of a given layer
+
+    # Arguments
+    - `layer::LayerOfNeurons`: The considered layer.
+
+    # Returns
+    - `Int`: The number of neurons of the layer`.
+    """
     function NumberOfNeurons(layer::LayerOfNeurons)
-        return length(layer.neurons)
+        return UInt16(length(layer.neurons))
     end
 
 
+    """
+    EvaluateNeuron(sigma, input_vector)
 
+    Given an input vector, compute the output and the new internal
+    state of the neuron.
 
-    # Given an input vector, compute the output and the new internal state of the
-    # neuron.
+    # Arguments
+    - `sigma::Neuron`: The considered neuron.
+    - `input_vector::Vector{Bool}`: The boolean vector fed to the neuron.
+
+    # Returns
+    - `Bool`: true if the neuron fires a spike, false otherwise`.
+    """
     function EvaluateNeuron(sigma::Neuron, input_vector::Vector{Bool})
         # Compute the number of input spikes
         TotalNumberOfSpikes::UInt64 = sigma.number_of_spikes
@@ -60,8 +132,19 @@ module SNPCircuit
         end
     end
 
-    # Given an input vector, compute the output and the new internal state of each
-    # neuron in the layer
+    """
+    EvaluateLayerOfNeurons(layer, input_vector)
+
+    Given an input vector, compute the output and the new internal
+    state of each neuron in the layer.
+
+    # Arguments
+    - `layer::LayerOfNeurons`: The considered layer.
+    - `input_vector::Vector{Bool}`: The boolean vector fed to each neuron.
+
+    # Returns
+    - `Vector{Bool}`: a vector of output spikes`.
+    """
     function EvaluateLayerOfNeurons(layer::LayerOfNeurons, input_vector::Vector{Bool})
         output_vector::Vector{Bool} = []
         for neuron in layer.neurons
@@ -70,8 +153,20 @@ module SNPCircuit
         return output_vector
     end
 
-    # Given an input vector, compute the output and the new internal state of each
-    # neuron in the circuit
+    
+    """
+    EvaluateLayerOfNeurons(layer, input_vector)
+
+    Given an input vector, compute the output and the new internal
+    state of each neuron in the circuit.
+
+    # Arguments
+    - `circuit::CircuitOfNeurons`: The considered circuit.
+    - `input_vector::Vector{Bool}`: The boolean vector fed to the first layer.
+
+    # Returns
+    - `Vector{Bool}`: a vector of output spikes of the circuit`.
+    """
     function EvaluateCircuitOfNeurons(circuit::CircuitOfNeurons, input_vector::Vector{Bool})
         output_vector::Vector{Bool} = input_vector
         for layer in circuit.layers
@@ -80,10 +175,26 @@ module SNPCircuit
         return output_vector
     end
 
-    ## Functions used to generate random networks
 
-    # This function takes as input bla bla
-    function GenerateRandomNetwork(inputs::Int64, outputs::Int64, min_layers = 1, max_layers = 2)
+    """
+    GenerateRandomCircuit(inputs, outputs, min_layers, max_layers)
+
+    This function generates a random circuit with a given set of parameters.
+    In particular, the generated circuit will take as input vectors of
+    boolean values of size _inputs_ and will return a vector of _outputs_
+    values. It will consist of an input layer, a random value between 
+    _min_layers_ and _max_layers_ of hidden layers, and an output layer.
+
+    # Arguments
+    - `inputs::UInt16`: The number of inputs fed to the circuit.
+    - `outputs::UInt16`: The number of output spikes of the circuit.
+    - `min_layers::UInt16`: The minimum number of hidden layers.
+    - `max_layers::UInt16`: The maximum number of hidden layers.
+
+    # Returns
+    - `Vector{Bool}`: a vector of output spikes of the circuit`.
+    """
+    function GenerateRandomCircuit(inputs::UInt16, outputs::UInt16, min_layers = 1, max_layers = 2)
         # This variable refers to the number of hidden layers
         n_layers = rand((min_layers:max_layers))
         
@@ -92,12 +203,12 @@ module SNPCircuit
         # Hidden layers
         for n_layer in 1:n_layers
 
-            # We assume that, when generating a randon network, each layer will contain x \in [1, n] 
+            # We assume that, when generating a randon network, each layer will contain x \in [n, n+2] 
             # neurons, where n is the number of neurons of the previous layer
             if n_layer == 1
-                n_neurons = rand((1 : inputs))
+                n_neurons = rand((inputs : inputs + 2))
             else
-                n_neurons = rand((1 : NumberOfNeurons(layers[n_layer - 1])))
+                n_neurons = rand((NumberOfNeurons(layers[n_layer - 1]) : NumberOfNeurons(layers[n_layer - 1]) + 2))
             end
 
             neurons = Vector{Neuron}()
@@ -129,14 +240,36 @@ module SNPCircuit
         
         return CircuitOfNeurons(layers)
     end
-                
-    function GenerateRandomNeuron(inputs::Int64)
+       
+
+    """
+    GenerateRandomNeuron(inputs)
+
+    This function generates a random neuron given a number of
+    inputs (i.e., the number of neurons of the previous layer).
+    The values of input_lines and rules are randomly assigned.
+
+    In particular, all possible input_lines are enumerated, then a 
+    subset (or the whole set) of them is randmoly chosen. The same happens
+    for the rules.
+
+    # Arguments
+    - `inputs::UInt16`: The number of inputs of the neuron.
+
+    # Returns
+    - `Neuron`: the randmoly generated neuron`.
+    """
+    function GenerateRandomNeuron(inputs::UInt16)
+        # Enumerating all the possible input_lines, and random permute them
         possible_input_lines = randperm(length(collect(1:inputs)))
 
+        # Sample a number of input_lines to be chosen
         num_input_lines = rand(1:length(possible_input_lines))
 
+        # Select a (sub)set of the input lines
         possible_input_lines = collect(1:inputs)[possible_input_lines[1:num_input_lines]]
-        
+            
+        # The same is performed on the rules
         possible_rules = randperm(length(collect(0:inputs))) .- 1
 
         num_rules = rand(1:length(possible_rules))
@@ -146,38 +279,76 @@ module SNPCircuit
         return Neuron(possible_rules, possible_input_lines, 0)
     end
 
-    ## Functions used to print
+    """
+    Base.show(io, neuron)
 
-    function Base.show(io::IO, s::Neuron)
+    Prints the content of a neuron
+
+    # Arguments
+    - `io::IO`: The I/O stream to render to.
+    - `neuron::Neuron`: The neuron to be printed
+
+    # Examples
+    ```julia
+    println(neuron)
+    """
+    function Base.show(io::IO, neuron::Neuron)
         print(io, "    Neuron\n")
         print("      Rules: {")
-        for i in 1 : length(s.rules)
-            print(string(sort(s.rules)[i]))
-            if i < length(s.rules)
+        for i in 1 : length(neuron.rules)
+            print(string(sort(neuron.rules)[i]))
+            if i < length(neuron.rules)
                 print(", ")
             end
         end
         print("}\n      Input lines: {")
-        for i in 1 : length(s.input_lines)
-            print(string(sort(s.input_lines)[i]))
-            if i < length(s.input_lines)
+        for i in 1 : length(neuron.input_lines)
+            print(string(sort(neuron.input_lines)[i]))
+            if i < length(neuron.input_lines)
                 print(", ")
             end
         end
         print("}")
     end
     
-    function Base.show(io::IO, s::LayerOfNeurons)
-        print(io, "  Layer (" * string(length(s.neurons)) * " neurons)\n")
-        for neuron in s.neurons
+    """
+    Base.show(io, layer)
+
+    Prints the content of a layer of neurons
+
+    # Arguments
+    - `io::IO`: The I/O stream to render to.
+    - `layer::LayerOfNeurons`: The layer to be printed
+
+    # Examples
+    ```julia
+    println(layer)
+    """
+    function Base.show(io::IO, layer::LayerOfNeurons)
+        print(io, "  Layer (" * string(length(layer.neurons)) * " neurons)\n")
+        for neuron in layer.neurons
             println(neuron) 
         end
     end
     
-    function Base.show(io::IO, s::CircuitOfNeurons)
-        println(io, "Circuit (" * string(length(s.layers)) * " layers)")
-        for layer in s.layers
+    """
+    Base.show(io, circuit)
+
+    Prints the content of a circuit
+
+    # Arguments
+    - `io::IO`: The I/O stream to render to.
+    - `circuit::CircuitOfNeurons`: The circuit to be printed
+
+    # Examples
+    ```julia
+    println(circuit)
+    """
+    function Base.show(io::IO, circuit::CircuitOfNeurons)
+        println(io, "Circuit (" * string(length(circuit.layers)) * " layers)")
+        for layer in circuit.layers
             println(layer) 
         end
     end
-end
+
+end #Module
