@@ -92,10 +92,9 @@ module GeneticAlgorithms
     - `Circuit`: A new individual obtained by performing the crossover`.
     """
     function Mutation(circuit::CircuitOfNeurons, inputs::UInt16, probabilities = MutationProbabilities(0.01, 0.08, 0.03, 0.2, 0.005, 0.08, 0.01))
-        
         # Adds a new layer
         if rand() < probabilities.new_layer
-
+            
             if length(circuit.layers) == 2
                 # TODO check questo due e commenta sta roba
                 index = 2
@@ -104,9 +103,9 @@ module GeneticAlgorithms
             end
             
             n_neurons = length(circuit.layers[index].neurons)
-
+    
             neurons = Vector{Neuron}()
-
+    
             for n_neuron in 1:n_neurons
                 push!(neurons, GenerateRandomNeuron(NumberOfNeurons(circuit.layers[index - 1])))
             end
@@ -117,132 +116,15 @@ module GeneticAlgorithms
         # Remove a random layer (if the number of layers is greater than two)
         if rand() < probabilities.remove_layer
             if NumberOfLayers(circuit) > 2
-                deleteat!(circuit.layers, rand((2 : NumberOfLayers(circuit) - 1)))
-            end
-        end
-
-        # Insert a new random neuron in a random layer (not the last)
-        if rand() < probabilities.new_neuron
-
-            # The minus one is done to exclude the last layer from getting new neurons
-            index_layer = rand((1 : NumberOfLayers(circuit) - 1))
-            layer = circuit.layers[index_layer]
-
-            if index_layer == 1
-                neuron = GenerateRandomNeuron(inputs)
-                insert!(layer.neurons, rand((1:NumberOfNeurons(layer))), neuron)  
-            else
-                neuron = GenerateRandomNeuron(NumberOfNeurons(circuit.layers[index_layer - 1]))
-                insert!(layer.neurons, rand((1:NumberOfNeurons(layer))), neuron)
-            end
-        end
-        
-        # Remove a random neuron from a random layer (not the last)
-        if rand() < probabilities.remove_neuron
-
-            index_layer = rand((1 : NumberOfLayers(circuit) - 1))
-            layer = circuit.layers[index_layer]
-
-            if length(layer.neurons) > 2
-                index_remove = rand((1:length(layer.neurons)))
-                deleteat!(layer.neurons, index_remove)
-            end
-        end
-            
-        
-        # Remove a random rule from a random neuron (consider also the last layer)
-        if rand() < probabilities.remove_rule
-
-            index_layer = rand((1 : NumberOfLayers(circuit)))
-            layer = circuit.layers[index_layer]
-
-            index_neuron = rand((1 : NumberOfNeurons(layer)))
-
-            if length(layer.neurons[index_neuron].rules) > 2
-                index_remove = rand((1:length(layer.neurons[index_neuron].rules)))
-                deleteat!(layer.neurons[index_neuron].rules, index_remove)
-            end
-        end  
-            
-        # Add a new random rule to a random neuron
-        if rand() < probabilities.new_rule
-
-            index_layer = rand((1 : NumberOfLayers(circuit)))
-            layer = circuit.layers[index_layer]
-
-            index_neuron = rand((1 : NumberOfNeurons(layer)))
-
-            #TODO Sistema sta merda
-            added = false
-            while added == false
-                rule = rand((1:100))
-                if (rule in layer.neurons[index_neuron].rules) == false
-                    push!(layer.neurons[index_neuron].rules, rule)
-                    added = true
-                end
-            end
-        end  
-                
-        # Samples a new set of input lines for a random neuron
-        if rand() < probabilities.random_input_lines
-
-            index_layer = rand((1 : NumberOfLayers(circuit)))
-            layer = circuit.layers[index_layer]
-
-            index_neuron = rand((1 : NumberOfNeurons(layer)))
-
-            if index_layer == 1
-                previous_inputs = inputs
-            else
-                previous_inputs = NumberOfNeurons(circuit.layers[index_layer - 1])
-            end
-            
-            possible_input_lines = randperm(length(collect(1:previous_inputs)))
-           
-            num_input_lines = rand(1:length(possible_input_lines))
-
-            circuit.layers[index_layer].neurons[index_neuron].input_lines = collect(1:previous_inputs)[possible_input_lines[1:num_input_lines]]
-        end
-                    
-        return circuit
-    end
-
-    function Mutation2(circuit::CircuitOfNeurons, inputs::UInt16, probabilities = MutationProbabilities(0.01, 0.08, 0.03, 0.2, 0.005, 0.08, 0.01))
-        # Add a new layer
-        if rand() < probabilities.new_layer
-            if length(circuit.layers) == 2
-                index = 2
-            else
-                index = rand((2 : length(circuit.layers)))
-            end
-            
-            n_neurons = length(circuit.layers[index].neurons)
-    
-            neurons = Vector{Neuron}()
-    
-            for n_neuron in 1:n_neurons
-                push!(neurons, GenerateRandomNeuron(NumberOfNeurons(circuit.layers[index - 1])))
-            end
-                
-            insert!(circuit.layers, index, LayerOfNeurons(neurons))
-                    
-            #Correggere i collegamenti del layer dopo
-            #for neuron in circuit.layers[index + 1].neurons
-        end
-        
-        # Remove a layer
-        if rand() < probabilities.remove_layer
-            if length(circuit.layers) > 2
                 deleteat!(circuit.layers, rand((2:length(circuit.layers) - 1)))
             end
         end
             
-        
-        
+        # All the mutations on the neurons are tested for each layer
         for i in 1 : length(circuit.layers) - 1
             layer = circuit.layers[i]
                 
-            # Insert new neuron
+            # Insert a new random neuron  
             if rand() < probabilities.new_neuron
                 if i == 1
                     neuron = GenerateRandomNeuron(inputs)
@@ -253,17 +135,18 @@ module GeneticAlgorithms
                 end
             end
             
-            # Remove a neuron
+            # Remove a random neuron
             if rand() < probabilities.remove_neuron
                 if length(layer.neurons) > 2
                     index_remove = rand((1:length(layer.neurons)))
                     deleteat!(layer.neurons, index_remove)
                 end
             end
-                
-            for j in 1 : length(circuit.layers[i].neurons)
+               
+            # The mutations for the rules are tested for each neuron
+            for j in 1 : NumberOfNeurons(circuit.layers[i])
             
-               # Remove rule
+               # Remove a random rule
                if rand() < probabilities.remove_rule
                    if length(circuit.layers[i].neurons[j].rules) > 2
                         index_remove = rand((1:length(circuit.layers[i].neurons[j].rules)))
@@ -271,8 +154,9 @@ module GeneticAlgorithms
                    end
                end  
                    
-               # New rule
-               if rand() <probabilities.new_rule
+               # Add a new random rule
+               if rand() < probabilities.new_rule
+                   #TODO migliora sta merda
                    added = false
                    while added == false
                         rule = rand((1:100))
@@ -283,7 +167,7 @@ module GeneticAlgorithms
                    end
                end  
                     
-               # New input_lines
+               # Sample a new set of random input lines
                if rand() < probabilities.random_input_lines
                    if i == 1
                        previous_inputs = inputs
@@ -304,6 +188,7 @@ module GeneticAlgorithms
         return circuit
     end
 
+    
 
     """
     CleanCircuit(c, inputs)

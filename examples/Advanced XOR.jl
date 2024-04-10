@@ -23,28 +23,8 @@ function BooleanFunctionParity(inputs::Vector{Bool})
     return result
 end
 
-# n controls the number of inputs
-n = 5
-
-examples = Vector{Vector{Bool}}()
-labels = Vector{Bool}();
-
-combinations = reverse.(Iterators.product(fill(0:1,n)...))[:]
-
-for j in 1 : 2^n
-    vector_of_bools = [bitstring(i)[end] == '1' for i in combinations[j]]
-
-    push!(examples, vector_of_bools)
-    push!(labels, BooleanFunctionParity(vector_of_bools))
-end
-    
-# At this stage, examples contains all the 2^n combinations, and labels[i] the corresponding
-# result of xor(examples[i])
-
-# I run 20 executions, each history will be save in this dictionary
-executions = Dict([])
-
-function simulation() 
+# This is the function that will perform a simulation
+function Simulation() 
     # This array will contain the history of accuracies
     max_fitness_history = []
         
@@ -61,7 +41,7 @@ function simulation()
     inputs = UInt16(length(examples[1]))
     outputs = UInt16(length(labels[1]))
 
-    for i in 1:population
+    for i in 1 : population
         random_network = GenerateRandomCircuit(inputs, 
                                             outputs, 
                                             min_hidden_layers, 
@@ -89,17 +69,13 @@ function simulation()
     #println("(1) Fitness initial: $max_fitness")
 
     while iter < max_iterations
-        #global simulations
-        #global max_fitness
-        #global iter
-
         elitarism_percentage = 0.10
 
         new_circuits = simulations[1 : Int64(round(elitarism_percentage * population)), :].Network
 
         for i in elitarism_percentage * population : population
             push!(new_circuits, 
-                        CleanCircuit(Mutation2(Crossover(
+                        CleanCircuit(Mutation(Crossover(
                             simulations[ProportionateSelection(simulations.Fitness), :].Network, 
                             simulations[ProportionateSelection(simulations.Fitness), :].Network,
                             inputs), inputs, mutation_probabilities), inputs))     
@@ -134,8 +110,29 @@ function simulation()
     return max_fitness_history
 end
 
+# n controls the number of inputs
+n = 5
+
+examples = Vector{Vector{Bool}}()
+labels = Vector{Bool}();
+
+combinations = reverse.(Iterators.product(fill(0:1,n)...))[:]
+
+for j in 1 : 2^n
+    vector_of_bools = [bitstring(i)[end] == '1' for i in combinations[j]]
+
+    push!(examples, vector_of_bools)
+    push!(labels, BooleanFunctionParity(vector_of_bools))
+end
+    
+# At this stage, examples contains all the 2^n combinations, and labels[i] the corresponding
+# result of xor(examples[i])
+
+# I run 20 executions, each history will be save in this dictionary
+executions = Dict([])
+
 for exec in 1 : 10
-    executions[exec] = simulation()
+    executions[exec] = Simulation()
     println("Execution $exec done (max fitness: " * string(executions[exec][end]) * ")")
 end
 
