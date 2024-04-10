@@ -24,8 +24,12 @@ How many input values should be used? Choose carefully, as the dimension of the 
 n = 5
 ```
 
-
-Then, launch the simulations with a single line:
+How many simulations should be performed values should be used? Choose carefully, as the dimension of the truth table grows exponentially (as $`\Theta(2^n)`$)
 ```
-Simulate(XOR, n)
+simulations = 20
+```
+
+Then, let the populations evolve with a single line:
+```
+Evolve(XOR, n, simulations)
 ```
