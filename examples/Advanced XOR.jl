@@ -6,10 +6,10 @@ of a XOR function f : {0, 1}^n -> sum_{i=1}^n (xor(x_i))
 
 push!(LOAD_PATH, "src/")
 
-using DataFrames
 using SNPCircuit
 using Utils
 using GeneticAlgorithms
+using DataFrames
 
 # Optional, if you want to plot the fitness history
 using Plots
