@@ -1,5 +1,4 @@
 module SpikingNeuralEvolution
-
     
     include("Utils.jl")
     using .Utils
@@ -7,8 +6,6 @@ module SpikingNeuralEvolution
     include("GeneticAlgorithms.jl")
     using .GeneticAlgorithms
     using .GeneticAlgorithms.SNPCircuit
-
-    
 
     using DataFrames
 
@@ -34,6 +31,7 @@ module SpikingNeuralEvolution
         random_circuit_max_layers::UInt16
     end
 
+    #TODO da commentare
     function Simulate(examples::Vector{Vector{Bool}}, labels::Vector{Bool}, evolution_parameters::EvolutionParameters, mutation_probabilities::MutationProbabilities)
         # This array will contain the history of accuracies
         max_fitness_history = []
@@ -98,6 +96,7 @@ module SpikingNeuralEvolution
         return max_fitness_history
    end
     
+   #TODO da commentare
    function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters, mutation_parameters::MutationProbabilities)
         if inputs > 2^10
             println("Warning: using a large input space (2^$inputs = $(2^inputs))")
