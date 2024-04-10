@@ -19,7 +19,7 @@ function XOR(inputs::Vector{Bool})
 end
 ```
 
-How many input values should be used? Choose carefully, as the dimension of the truth table grows exponentially ($2^n$)
+How many input values should be used? Choose carefully, as the dimension of the truth table grows exponentially ($\Theta (2^n)$)
 ```
 n = 5
 ```
