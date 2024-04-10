@@ -14,7 +14,6 @@ module GeneticAlgorithms
     # Structs and functions that are exported to the user
     export Crossover, 
            Mutation,
-           Mutation2,
            Fitness,
            CleanCircuit,
            ProportionateSelection
