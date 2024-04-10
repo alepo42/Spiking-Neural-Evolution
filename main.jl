@@ -1,15 +1,12 @@
 push!(LOAD_PATH, "src/")
 
-using SNPCircuit
-using GeneticAlgorithms
+using SpikingNeuralEvolution
+using Plots
 
-for i in 1:100
-    println("Vado")
-    
-    c = Crossover(GenerateRandomCircuit(UInt16(4), UInt16(1), UInt16(2), UInt16(2)), 
-                  GenerateRandomCircuit(UInt16(4), UInt16(1), UInt16(2), UInt16(2)),
-                  UInt16(4))
-    println(c)
-    println(EvaluateCircuitOfNeurons(c, [true, true, false, true]))
-    
+function XOR(inputs::Vector{Bool}) 
+    return reduce(xor, inputs)
 end
+
+histories = Evolve(XOR, UInt16(5))
+
+plot(histories)

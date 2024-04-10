@@ -1,18 +1,20 @@
 """ 
-This source code exploits Genetic Algorithms (GA) in order to 
-find a SN P-System circuit that reproduces the behavior
-of a XOR function f : {0, 1}^n -> sum_{i=1}^n (xor(x_i))
-
-It uses the high-level APIs offered by SpikingNeuralEvolution.jl
+This source code uses the high-level APIs offered by 
+SpikingNeuralEvolution.jl to find a circuit that evaluates
+the XOR betwen 5 bits
 """
 
-push!(LOAD_PATH, "src/")
+push!(LOAD_PATH, "../src/")
 
 using SpikingNeuralEvolution
+using Plots
+
+n = UInt16(5)
 
 function XOR(inputs::Vector{Bool}) 
     return reduce(xor, inputs)
 end
 
-#TODO voglio poter scrivere sta roba
-Simulate(XOR, inputs)
+histories = Evolve(XOR, n)
+
+plot(histories)

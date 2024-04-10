@@ -10,7 +10,7 @@ module Utils
 
     # Functions that are exported to the user
     export MutationProbabilities,
-           Differences 
+           Differences
 
     """
     MutationProbabilities
@@ -61,5 +61,7 @@ module Utils
 
         return d 
     end
+
+    
 
 end #Module

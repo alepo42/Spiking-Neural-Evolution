@@ -6,9 +6,14 @@ Genetic Algorithms (GA) on circuits composed of SN P-System neurons
 
 """
 module GeneticAlgorithms
+
     # Libraries required
-    using SNPCircuit
-    using Utils
+    include("SNPCircuit.jl")
+    using .SNPCircuit
+
+    include("Utils.jl")
+    using .Utils
+
     using Random
 
     # Structs and functions that are exported to the user
@@ -17,6 +22,7 @@ module GeneticAlgorithms
            Fitness,
            CleanCircuit,
            ProportionateSelection
+
 
 
     """
