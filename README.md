@@ -24,7 +24,7 @@ How many input values should be used? Choose carefully, as the dimension of the 
 n = 5
 ```
 
-How many simulations should be performed values should be used? Choose carefully, as the dimension of the truth table grows exponentially (as $`\Theta(2^n)`$)
+How many simulations should be performed? Each simulation consists of (by default) 1000 iterations over a set of (by default) 100 individuals
 ```
 simulations = 20
 ```
