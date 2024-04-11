@@ -149,4 +149,19 @@ module SpikingNeuralEvolution
                     ))
     end
 
+    function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters)
+        return Evolve(f, 
+                    inputs,
+                    evolution_parameters,
+                    MutationProbabilities(
+                        0.010,  # New layer
+                        0.080,  # Remove layer
+                        0.030,  # New neuron
+                        0.200,  # Remove neuron
+                        0.005,  # Add rule
+                        0.080,  # Remove rules
+                        0.010   # Random input lines
+                    ))
+    end
+
 end
