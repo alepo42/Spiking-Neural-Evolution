@@ -2,11 +2,14 @@
 
 This repository contains the source code for the work-in-progress paper _An Evolutionary Approach to the Design of Spiking Neural P Circuits_
 
+# How it works
+
 # How to install
 
 The source code requires the following dependencies:
 - DataFrames
 - (optionally) Plots
+
 # How to use
 
 The source code offers a high-level API that makes it easy to run the simulations on a preferred Boolean function.
