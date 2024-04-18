@@ -8,8 +8,8 @@
     ·
     <a href="https://orcid.org/0000-0001-5093-7932"><strong>Lorenzo Rovida</strong></a>
   </p>
-  <span style="font-size:0.7em;">University of Milan-Bicocca, Department of Informatics, Systems, and Communication, 
-  Viale Sarca 336, Edificio U14, 20126 Milano, Italy</span>
+  <sup>University of Milan-Bicocca, Department of Informatics, Systems, and Communication, 
+  Viale Sarca 336, Edificio U14, 20126 Milano, Italy</sup>
 </center>
 
 </br>
