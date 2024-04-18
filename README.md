@@ -1,4 +1,25 @@
-# Spiking Neural Evolution
+<center> 
+  <h1 align="center">An Evolutionary Approach to the Design of Spiking Neural P Circuits</h1>
+  <img src="imgs/sample.png" alt="Console presentation image" width=40% >
+  <p align="center">
+    <a href="https://orcid.org/0000-0002-8105-4371"><strong>Alberto Leporati</strong></a>
+    ·
+    <a href="https://orcid.org/0000-0001-5093-7932"><strong>Lorenzo Rovida</strong></a>
+  </p>
+  <span style="font-size:0.7em;">University of Milan-Bicocca, Department of Informatics, Systems, and Communication, 
+  Viale Sarca 336, Edificio U14, 20126 Milano, Italy</span>
+</center>
+
+</br>
+<a href='https://mcrespo.me/publications/primary-space-cv/data/crespo2021primary.pdf'>
+    <img src='https://img.shields.io/badge/Paper-PDF-red?style=flat-square' alt='Paper PDF' width=9%>
+</a> 
+    
+<!-- 
+<img src="https://github.com/narger-ef/Practical-Sorting-of-Encrypted-Numbers/actions/workflows/cmake-multi-platform.yml/badge.svg" alt="CMake build result" width=30% >
+-->
+---
+
 
 This repository contains the source code for the work-in-progress paper _An Evolutionary Approach to the Design of Spiking Neural P Circuits_
 
