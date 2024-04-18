@@ -15,6 +15,5 @@ function XOR(inputs::Vector{Bool})
     return reduce(xor, inputs)
 end
 
-histories = Evolve(XOR, n)
-
-plot(histories)
+# histories is a dictionary containing circuits and relative history
+histories = Evolve(XOR, n);

@@ -60,7 +60,11 @@ module SpikingNeuralEvolution
     
         max_iterations = evolution_parameters.iterations_per_simulation
         max_fitness = maximum(simulations.Fitness)
-   
+        
+        sort!(simulations, :Fitness, rev = true)
+
+        best_circuit = simulations[1, :].Network
+
         iter = 1
     
         while iter < max_iterations
@@ -84,20 +88,23 @@ module SpikingNeuralEvolution
     
             push!(max_fitness_history, maximum(simulations.Fitness))
     
-            if maximum(simulations.Fitness) > max_fitness
-                max_fitness = maximum(simulations.Fitness)
+            sort!(simulations, :Fitness, rev = true)
+
+            if simulations[1, :].Fitness > max_fitness
+                max_fitness = simulations[1, :].Fitness
+                best_circuit = deepcopy(simulations[1, :].Network)
             end
     
-            sort!(simulations, :Fitness, rev = true)
+            
     
             iter += 1
         end
         
-        return max_fitness_history
+        return best_circuit, max_fitness_history 
    end
     
    #TODO da commentare
-   function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters, mutation_parameters::MutationProbabilities)
+   function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters, mutation_parameters::MutationProbabilities, verbose::Bool)
         if inputs > 2^10
             println("Warning: using a large input space (2^$inputs = $(2^inputs))")
         end
@@ -118,50 +125,62 @@ module SpikingNeuralEvolution
 
         executions = Dict([])
 
+        best_circuit = 0
+        best_fitness = 0
+        
         for exec in 1 : evolution_parameters.simulations
             executions[exec] = Simulate(examples, labels, evolution_parameters, mutation_parameters)
-            println("Execution $exec done (max fitness: " * string(executions[exec][end]) * ")")
+            
+            if (executions[exec][2][end] > best_fitness) 
+                best_fitness = executions[exec][2][end]
+                best_circuit = executions[exec][1]
+            end
+
+            if verbose println("Execution $exec done (max fitness: " * string(executions[exec][2][end]) * ")") end
         end
 
-        histories = collect(sort(executions))
-        return [collect(pair) for pair in histories]
+        println("I found a circuit with " * string(NumberOfLayers(best_circuit)) * " layers with a fitness of $best_fitness")
+
+        return executions
     end
 
-    function Evolve(f::Function, inputs::UInt16)
+    function Evolve(f::Function, inputs::UInt16, verbose = false)
         return Evolve(f, 
                     inputs,
                     EvolutionParameters(
-                        UInt32(5),    # Simulations
-                        UInt32(500),   # Iterations per simulation
+                        UInt32(5),     # Simulations
+                        UInt32(1000),  # Iterations per simulation
                         UInt32(80),    # Min number of random population
                         UInt32(120),   # Max number of random population
                         UInt16(1),     # Min number of random hidden layers
                         UInt16(3)      # Max number of random hidden layers
                     ),
                     MutationProbabilities(
-                        0.010,  # New layer
+                        0.008,  # New layer
                         0.080,  # Remove layer
                         0.030,  # New neuron
                         0.200,  # Remove neuron
                         0.005,  # Add rule
                         0.080,  # Remove rules
                         0.010   # Random input lines
-                    ))
+                    ),
+                    verbose)
     end
 
-    function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters)
+    function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters, verbose = false)
         return Evolve(f, 
                     inputs,
                     evolution_parameters,
                     MutationProbabilities(
-                        0.010,  # New layer
+                        0.008,  # New layer
                         0.080,  # Remove layer
                         0.030,  # New neuron
                         0.200,  # Remove neuron
                         0.005,  # Add rule
                         0.080,  # Remove rules
                         0.010   # Random input lines
-                    ))
+                    ),
+                    verbose)
     end
 
 end

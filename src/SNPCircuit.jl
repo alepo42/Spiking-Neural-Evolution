@@ -280,19 +280,18 @@ module SNPCircuit
     end
 
     """
-    Base.show(io, neuron)
+    PrintNeuron(neuron)
 
     Prints the content of a neuron
 
     # Arguments
-    - `io::IO`: The I/O stream to render to.
     - `neuron::Neuron`: The neuron to be printed
 
     # Examples
     ```julia
     println(neuron)
     """
-    function Base.show(io::IO, neuron::Neuron)
+    function PrintNeuron(neuron::Neuron)
         print(io, "    Neuron\n")
         print("      Rules: {")
         for i in 1 : length(neuron.rules)
@@ -312,25 +311,43 @@ module SNPCircuit
     end
     
     """
-    Base.show(io, layer)
+    PrintLayer (layer)
 
     Prints the content of a layer of neurons
 
     # Arguments
-    - `io::IO`: The I/O stream to render to.
     - `layer::LayerOfNeurons`: The layer to be printed
 
     # Examples
     ```julia
     println(layer)
     """
-    function Base.show(io::IO, layer::LayerOfNeurons)
+    function PrintLayer(layer::LayerOfNeurons)
         print(io, "  Layer (" * string(length(layer.neurons)) * " neurons)\n")
         for neuron in layer.neurons
-            println(neuron) 
+            PrintNeuron(neuron) 
         end
     end
     
+    """
+    PrintCircuit (circuit)
+
+    Prints the content of a circuit of neurons
+
+    # Arguments
+    - `circuit::CircuitOfNeurons`: The circuit to be printed
+
+    # Examples
+    ```julia
+    println(circuit)
+    """
+    function PrintCircuit(circuit::CircuitOfNeurons)
+        println(io, "Circuit (" * string(length(circuit.layers)) * " layers)")
+        for layer in circuit.layers
+            PrintLayer(layer) 
+        end
+    end
+
     """
     Base.show(io, circuit)
 
@@ -346,9 +363,6 @@ module SNPCircuit
     """
     function Base.show(io::IO, circuit::CircuitOfNeurons)
         println(io, "Circuit (" * string(length(circuit.layers)) * " layers)")
-        for layer in circuit.layers
-            println(layer) 
-        end
     end
 
 end #Module
