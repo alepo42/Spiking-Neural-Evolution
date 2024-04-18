@@ -1,7 +1,7 @@
 <center> 
   <h1 align="center">An Evolutionary Approach to the Design of Spiking Neural P Circuits</h1>
-  <img src="imgs/sample.png" alt="Console presentation image" width=40% >
   <p align="center">
+    <img src="imgs/sample.png" alt="Console presentation image" width=40% ></br>
     <a href="https://orcid.org/0000-0002-8105-4371"><strong>Alberto Leporati</strong></a>
     ·
     <a href="https://orcid.org/0000-0001-5093-7932"><strong>Lorenzo Rovida</strong></a>
