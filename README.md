@@ -6,8 +6,11 @@
     ·
     <a href="https://orcid.org/0000-0001-5093-7932"><strong>Lorenzo Rovida</strong></a>
   </p>
-  <span style="font-size:0.7em;">University of Milan-Bicocca, Department of Informatics, Systems, and Communication, 
-  Viale Sarca 336, Edificio U14, 20126 Milano, Italy</span>
+  <p align="center" line-height:20><sup>University of Milan-Bicocca, <br>
+    Department of Informatics, Systems, and Communication, <br>
+  $\texttt{\{lorenzo.rovida, alberto.leporati\}@unimib.it}$
+  </sup>
+  </p>
 </center>
 
 </br>
