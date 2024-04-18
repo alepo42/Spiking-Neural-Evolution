@@ -1,16 +1,17 @@
 <center> 
   <h1 align="center">An Evolutionary Approach to the Design of Spiking Neural P Circuits</h1>
   <p align="center">
-    <img src="imgs/console.png" alt="Console presentation image" width=85% ></br>
     <a href="https://orcid.org/0000-0002-8105-4371"><strong>Alberto Leporati</strong></a>
     ·
     <a href="https://orcid.org/0000-0001-5093-7932"><strong>Lorenzo Rovida</strong></a>
+    </p>
+    <p align="center" line-height:20><sup>University of Milan-Bicocca, <br>
+      Department of Informatics, Systems, and Communication, <br>
+    $\texttt{\{lorenzo.rovida, alberto.leporati\}@unimib.it}$
+    </sup>
+    
   </p>
-  <p align="center" line-height:20><sup>University of Milan-Bicocca, <br>
-    Department of Informatics, Systems, and Communication, <br>
-  $\texttt{\{lorenzo.rovida, alberto.leporati\}@unimib.it}$
-  </sup>
-  </p>
+  <p align="center"><img src="imgs/console.png" alt="Console presentation image" width=85% ></p>
 </center>
 
 </br>
