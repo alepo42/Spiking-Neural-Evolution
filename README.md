@@ -11,7 +11,7 @@
     </sup>
     
   </p>
-  <p align="center"><img src="imgs/console.png" alt="Console presentation image" width=85% ></p>
+  <p align="center"><img src="imgs/console.png" alt="Console presentation image" width=80% ></p>
 </center>
 
 </br>
