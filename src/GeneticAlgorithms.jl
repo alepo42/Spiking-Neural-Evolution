@@ -193,6 +193,114 @@ module GeneticAlgorithms
         return circuit
     end
 
+    new_layer = 0.01
+    remove_layer = 0.08
+    new_neuron = 0.03
+    remove_neuron = 0.2
+    new_rule = 0.005
+    remove_rule = 0.08
+
+    random_input_lines = 0.01
+
+    function MutationNotebook(circuit::CircuitOfNeurons, n::UInt16, probabilities = MutationProbabilities(0.01, 0.08, 0.03, 0.2, 0.005, 0.08, 0.01))
+        # Add a new layer
+        if rand() < new_layer
+            if length(circuit.layers) == 2
+                index = 2
+            else
+                index = rand((2 : length(circuit.layers)))
+            end
+            
+            inputs = NumberOfNeurons(circuit.layers[index - 1])
+            
+            n_neurons = NumberOfNeurons(circuit.layers[index])
+
+            neurons = Vector{Neuron}()
+
+            for n_neuron in 1:n_neurons
+                push!(neurons, GenerateRandomNeuron(inputs))
+            end
+                
+            insert!(circuit.layers, index, LayerOfNeurons(neurons))
+                    
+            #Correggere i collegamenti del layer dopo
+            #for neuron in circuit.layers[index + 1].neurons
+        end
+        
+        # Remove a layer
+        if rand() < remove_layer
+            if length(circuit.layers) > 2
+                deleteat!(circuit.layers, rand((2:length(circuit.layers) - 1)))
+            end
+        end
+            
+        
+        
+        for i in 1 : length(circuit.layers) - 1
+            layer = circuit.layers[i]
+                
+            # Insert new neuron
+            if rand() < new_neuron
+                if i == 1
+                    neuron = GenerateRandomNeuron(n)
+                    insert!(layer.neurons, rand((1:length(layer.neurons))), neuron)  
+                else
+                    neuron = GenerateRandomNeuron(NumberOfNeurons(circuit.layers[i - 1]))
+                    insert!(layer.neurons, rand((1:length(layer.neurons))), neuron)
+                end
+            end
+            
+            # Remove a neuron
+            if rand() < remove_neuron
+                if length(layer.neurons) > 2
+                    index_remove = rand((1:length(layer.neurons)))
+                    deleteat!(layer.neurons, index_remove)
+                end
+            end
+                
+            for j in 1 : length(circuit.layers[i].neurons)
+            
+            # Remove rule
+            if rand() < remove_rule
+                if length(circuit.layers[i].neurons[j].rules) > 2
+                        index_remove = rand((1:length(circuit.layers[i].neurons[j].rules)))
+                        deleteat!(circuit.layers[i].neurons[j].rules, index_remove)
+                end
+            end  
+                
+            # New rule
+            if rand() < new_rule
+                added = false
+                while added == false
+                        rule = rand((1:100))
+                        if (rule in circuit.layers[i].neurons[j].rules) == false
+                            push!(circuit.layers[i].neurons[j].rules, rule)
+                            added = true
+                        end
+                end
+            end  
+                    
+            # New input_lines
+            if rand() < random_input_lines
+                if i == 1
+                    previous_inputs = n
+                else
+                    previous_inputs = NumberOfNeurons(circuit.layers[i - 1])
+                end
+                
+                possible_input_lines = randperm(length(collect(1:previous_inputs)))
+
+                num_input_lines = rand(1:length(possible_input_lines))
+
+                circuit.layers[i].neurons[j].input_lines = collect(1:previous_inputs)[possible_input_lines[1:num_input_lines]]
+            end
+            end     
+            
+        end
+                    
+        return circuit
+    end
+
     
 
     """
@@ -267,6 +375,55 @@ module GeneticAlgorithms
         end
 
         #TODO Considera il caso in cui il layer rimane senza neuroni
+        
+        return circuit
+    end
+
+    function CleanCircuitNotebook(c::CircuitOfNeurons, n::UInt16)
+        circuit = deepcopy(c)
+        
+        # Correggo, eventualmente, il primo layer
+        for i in 1 : NumberOfNeurons(circuit.layers[1])
+            circuit.layers[1].neurons[i].input_lines = filter(x -> x <= n, circuit.layers[1].neurons[i].input_lines)
+        end
+        
+        for i in 2 : NumberOfLayers(circuit) - 1
+            j = 1
+            while j <= NumberOfNeurons(circuit.layers[i])
+                 
+                # Elenco le connessioni del neurone ad elementi che non ci sono più
+                unconnected = Differences(NumberOfNeurons(circuit.layers[i - 1]),
+                                          circuit.layers[i].neurons[j].input_lines)
+                
+                if length(unconnected) == length(circuit.layers[i].neurons[j].input_lines)
+                    # Se è uguale al numero di connessioni, allora è da eliminare
+                    deleteat!(circuit.layers[i].neurons, j)
+                    # Se no il ciclo for salta un neurone
+                    j = j - 1 
+                else
+                    # Se è minore del numero di connessioni, tolgo solo i collegamenti a vuoto
+                    circuit.layers[i].neurons[j].input_lines = 
+                        setdiff(circuit.layers[i].neurons[j].input_lines, unconnected)
+                    
+                    
+                end
+                
+            
+                j = j + 1
+            end
+        end
+        
+        for i in 1 : NumberOfNeurons(circuit.layers[end])
+            # Correggo, eventualmente, l'ultimo neurone
+            unconnected = Differences(NumberOfNeurons(circuit.layers[end - 1]),
+                circuit.layers[end].neurons[i].input_lines)
+    
+            circuit.layers[end].neurons[i].input_lines = setdiff(circuit.layers[end].neurons[i].input_lines, unconnected)
+    
+            if length(circuit.layers[end].neurons[i].input_lines) < 2
+                circuit.layers[end].neurons[i].input_lines = 1 : NumberOfNeurons(circuit.layers[end - 1])
+            end
+        end
         
         return circuit
     end

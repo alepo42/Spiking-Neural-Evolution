@@ -1,4 +1,6 @@
 module SpikingNeuralEvolution
+
+    @enum StoppingCriteria MaxIterations=0 Threshold=1   
     
     include("Utils.jl")
     using .Utils
@@ -10,7 +12,9 @@ module SpikingNeuralEvolution
     using DataFrames
 
     export Evolve,
-           EvolutionParameters
+           EvolutionParameters,
+           MutationProbabilities,
+           StoppingCriteria
 
 
     """
@@ -29,6 +33,7 @@ module SpikingNeuralEvolution
         population_max::UInt32
         random_circuit_min_layers::UInt16
         random_circuit_max_layers::UInt16
+        stopping_criteria::StoppingCriteria
     end
 
     #TODO da commentare
@@ -66,13 +71,16 @@ module SpikingNeuralEvolution
         best_circuit = simulations[1, :].Network
 
         iter = 1
+
+        # The iteration in which the maximum (1 or threshold) fitness has been found
+        iteration_of_max_fitness = -1
     
         while iter < max_iterations
-            elitarism_percentage = 0.10
+            elitism_percentage = 0.10
     
-            new_circuits = simulations[1 : Int64(round(elitarism_percentage * population)), :].Network
+            new_circuits = simulations[1 : Int64(round(elitism_percentage * population)), :].Network
     
-            for i in elitarism_percentage * population : population
+            for i in elitism_percentage * population : population
                 push!(new_circuits, 
                             CleanCircuit(Mutation(Crossover(
                                 simulations[ProportionateSelection(simulations.Fitness), :].Network, 
@@ -94,17 +102,20 @@ module SpikingNeuralEvolution
                 max_fitness = simulations[1, :].Fitness
                 best_circuit = deepcopy(simulations[1, :].Network)
             end
-    
-            
+
+            if max_fitness == 1 && iteration_of_max_fitness == -1
+                iteration_of_max_fitness = iter
+            end
+        
     
             iter += 1
         end
         
-        return best_circuit, max_fitness_history 
+        return best_circuit, max_fitness_history, Int16(iteration_of_max_fitness)
    end
     
    #TODO da commentare
-   function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters, mutation_parameters::MutationProbabilities, verbose::Bool)
+   function Evolve(f::Function, inputs::UInt16, evolution_parameters::EvolutionParameters, mutation_parameters::MutationProbabilities, verbose = false)
         if inputs > 2^10
             println("Warning: using a large input space (2^$inputs = $(2^inputs))")
         end
@@ -127,7 +138,7 @@ module SpikingNeuralEvolution
 
         best_circuit = 0
         best_fitness = 0
-        
+
         for exec in 1 : evolution_parameters.simulations
             executions[exec] = Simulate(examples, labels, evolution_parameters, mutation_parameters)
             
@@ -136,7 +147,7 @@ module SpikingNeuralEvolution
                 best_circuit = executions[exec][1]
             end
 
-            if verbose println("Execution $exec done (max fitness: " * string(executions[exec][2][end]) * ")") end
+            if verbose println("Execution $exec done (max fitness: " * string(executions[exec][2][end]) * ") in " * string(executions[exec][3]) * " iterations.") end
         end
 
         println("I found a circuit with " * string(NumberOfLayers(best_circuit)) * " layers with a fitness of $best_fitness")
@@ -153,7 +164,32 @@ module SpikingNeuralEvolution
                         UInt32(80),    # Min number of random population
                         UInt32(120),   # Max number of random population
                         UInt16(1),     # Min number of random hidden layers
-                        UInt16(3)      # Max number of random hidden layers
+                        UInt16(3),      # Max number of random hidden layers
+                        MaxIterations
+                    ),
+                    MutationProbabilities(
+                        0.008,  # New layer
+                        0.080,  # Remove layer
+                        0.030,  # New neuron
+                        0.200,  # Remove neuron
+                        0.005,  # Add rule
+                        0.080,  # Remove rules
+                        0.010   # Random input lines
+                    ),
+                    verbose)
+    end
+
+    function Evolve(f::Function, inputs::Int, verbose = false)
+        return Evolve(f, 
+                    UInt16(inputs),
+                    EvolutionParameters(
+                        UInt32(5),     # Simulations
+                        UInt32(1000),  # Iterations per simulation
+                        UInt32(80),    # Min number of random population
+                        UInt32(120),   # Max number of random population
+                        UInt16(1),     # Min number of random hidden layers
+                        UInt16(3),      # Max number of random hidden layers
+                        MaxIterations
                     ),
                     MutationProbabilities(
                         0.008,  # New layer

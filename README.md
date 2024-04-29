@@ -29,15 +29,22 @@ This repository contains the source code for the work-in-progress paper _An Evol
 
 # How it works
 
+This program utilizes spiking neural P circuits (SN P circuits) and explores the effectiveness of Genetic Algorithms (GA) in finding circuits capable of computing Boolean functions. 
+
 # How to install
 
 The source code requires the following dependencies:
 - DataFrames
+- Combinatorics
+- Random
+- Statistics
 - (optionally) Plots
 
 # How to use
 
 The source code offers a high-level API that makes it easy to run the simulations on a preferred Boolean function.
+
+## Basic Usage
 
 First of all, include the library: 
 
@@ -66,3 +73,19 @@ Then, let the populations evolve with a single line:
 ```
 Evolve(XOR, n, simulations)
 ```
+
+## Advanced usage
+
+It is possible to run the evolution using many different parameters. We define:
+
+WIP
+
+- Evolution parameters
+- Mutation parameters
+
+## Authors
+
+- Alberto Leporati (`alberto.leporati@unimib.it`)
+- Lorenzo Rovida (`lorenzo.rovida@unimib.it`)
+
+Made with <3  at Department of Informatics, Systems and Communication in University of Milan-Bicocca.

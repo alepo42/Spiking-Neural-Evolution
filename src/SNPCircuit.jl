@@ -10,6 +10,7 @@ module SNPCircuit
 
     # Library required when generating a random network
     using Random
+    
 
     # Structs and functions that are exported to the user
     export Neuron, 
@@ -259,7 +260,7 @@ module SNPCircuit
     # Returns
     - `Neuron`: the randmoly generated neuron`.
     """
-    function GenerateRandomNeuron(inputs::UInt16)
+    function GenerateRandomNeuronOld(inputs::UInt16)
         # Enumerating all the possible input_lines, and random permute them
         possible_input_lines = randperm(length(collect(1:inputs)))
 
@@ -276,6 +277,22 @@ module SNPCircuit
 
         possible_rules = possible_rules[1:num_rules]
 
+        return Neuron(possible_rules, possible_input_lines, 0)
+    end
+
+    function GenerateRandomNeuron(inputs::UInt16)
+        possible_input_lines = randperm(length(collect(1:inputs)))
+    
+        num_input_lines = rand(1:length(possible_input_lines))
+    
+        possible_input_lines = collect(1:inputs)[possible_input_lines[1:num_input_lines]]
+        
+        possible_rules = randperm(length(collect(1:15)))
+    
+        num_rules = rand(1:length(possible_rules))
+    
+        possible_rules = collect(1:15)[possible_rules[1:num_rules]]
+    
         return Neuron(possible_rules, possible_input_lines, 0)
     end
 
