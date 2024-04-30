@@ -20,7 +20,6 @@ n = UInt16(5)
 
 f_2 = [[1], [1, 4], [1, 5], [2, 4], [3, 5], [4, 5], [1, 2, 3], [1, 2, 4], [1, 2, 5], [2, 3, 4], [2, 3, 5], [1, 2, 3, 4], [1, 3, 4, 5], [2, 3, 4, 5], [1, 2, 3, 4, 5], false]
 
-
 function ANF(inputs::Vector{Bool}) 
     return SpikingNeuralEvolution.Utils.EvaluateANFFunction(inputs, f_2)
 end
@@ -31,17 +30,18 @@ end
 results = DataFrame(LayersMin = UInt16[], LayersMax = UInt16[], Population = UInt16[], MeanFitness = Float64[], MaxFitness = Float64[], SuccessfulSimulations = UInt16[])
 results_ts = ThreadSafeDict()
 
-@Threads.threads for population in [50, 75, 100]
+@Threads.threads for population in [75, 100, 125]
     @Threads.threads for lay_min in [1, 2, 3]
         for lay_max in lay_min : lay_min + 1
             evolution_parameters = EvolutionParameters(
-                UInt32(30),    # How many simulations
-                UInt32(600),  # How many iterations per simulation
+                UInt32(20),    # How many simulations
+                UInt32(500),  # How many iterations per simulation
                 UInt32(population),    # Min number of random population
                 UInt32(population),    # Max number of random population
                 UInt16(lay_min),   # Min number of random hidden layers
                 UInt16(lay_max),    # Max number of random hidden layers
-                SpikingNeuralEvolution.MaxIterations
+                SpikingNeuralEvolution.MaxIterations,
+                1
             )  
             histories = Evolve(ANF, n, evolution_parameters)
 
@@ -82,24 +82,24 @@ println(results)
 
 """
 Row │ LayersMin  LayersMax  Population  MeanFitness  MaxFitness  SuccessfulSimulations 
-     │ UInt16     UInt16     UInt16      Float64      Float64     UInt16                
+│ UInt16     UInt16     UInt16      Float64      Float64     UInt16                
 ─────┼──────────────────────────────────────────────────────────────────────────────────
-   1 │         3          4         100     0.88125      0.96875                      0
-   2 │         3          4          50     0.88125      1.0                          1
-   3 │         2          2         100     0.880208     0.96875                      0
-   4 │         3          3         100     0.879167     0.9375                       0
-   5 │         1          1          75     0.877083     0.96875                      0
-   6 │         1          2         100     0.872917     0.96875                      0
-   7 │         2          3         100     0.872917     0.90625                      0
-   8 │         3          3          50     0.871875     1.0                          1
-   9 │         2          2          75     0.869792     1.0                          1
-  10 │         3          4          75     0.866667     0.96875                      0
-  11 │         1          1          50     0.865625     0.9375                       0
-  12 │         2          3          75     0.865625     0.90625                      0
-  13 │         2          2          50     0.864583     0.96875                      0
-  14 │         3          3          75     0.863542     0.96875                      0
-  15 │         1          1         100     0.861458     0.9375                       0
-  16 │         1          2          75     0.859375     0.90625                      0
-  17 │         2          3          50     0.857292     0.9375                       0
-  18 │         1          2          50     0.854167     0.90625                      0
+1 │         2          3         125     0.864062     0.9375                       0
+2 │         3          3         125     0.864062     0.90625                      0
+3 │         1          1         125     0.860938     0.90625                      0
+4 │         3          4          75     0.860938     0.9375                       0
+5 │         3          4         100     0.857812     0.96875                      0
+6 │         3          4         125     0.857812     0.90625                      0
+7 │         2          2         125     0.857812     0.9375                       0
+8 │         1          2         100     0.857812     0.90625                      0
+9 │         2          3         100     0.857812     0.90625                      0
+10 │         1          1         100     0.85625      0.96875                      0
+11 │         3          3         100     0.85625      0.90625                      0
+12 │         3          3          75     0.853125     0.90625                      0
+13 │         1          1          75     0.851562     0.90625                      0
+14 │         2          3          75     0.85         0.9375                       0
+15 │         1          2         125     0.848437     0.9375                       0
+16 │         2          2         100     0.846875     0.90625                      0
+17 │         1          2          75     0.846875     0.90625                      0
+18 │         2          2          75     0.845313     0.875                        0
 """

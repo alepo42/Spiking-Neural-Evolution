@@ -34,6 +34,7 @@ module SpikingNeuralEvolution
         random_circuit_min_layers::UInt16
         random_circuit_max_layers::UInt16
         stopping_criteria::StoppingCriteria
+        percentage_of_examples::Float64
     end
 
     #TODO da commentare
@@ -127,7 +128,7 @@ module SpikingNeuralEvolution
         # This line creates a vector containing all possible combinations (2^n) of _inputs_ bits
         combinations = reverse.(Iterators.product(fill(0 : 1, inputs)...))[:]
 
-        for j in 1 : (2 ^ inputs)
+        for j in 1 : Int(round((2 ^ inputs) * evolution_parameters.percentage_of_examples))
             combination = [bitstring(i)[end] == '1' for i in combinations[j]]
 
             push!(examples, combination)
@@ -159,13 +160,14 @@ module SpikingNeuralEvolution
         return Evolve(f, 
                     inputs,
                     EvolutionParameters(
-                        UInt32(5),     # Simulations
-                        UInt32(1000),  # Iterations per simulation
-                        UInt32(80),    # Min number of random population
-                        UInt32(120),   # Max number of random population
-                        UInt16(1),     # Min number of random hidden layers
+                        UInt32(5),      # Simulations
+                        UInt32(1000),   # Iterations per simulation
+                        UInt32(80),     # Min number of random population
+                        UInt32(120),    # Max number of random population
+                        UInt16(1),      # Min number of random hidden layers
                         UInt16(3),      # Max number of random hidden layers
-                        MaxIterations
+                        MaxIterations,  # Stopping criteria
+                        1               # Percentage of input combinations examples
                     ),
                     MutationProbabilities(
                         0.008,  # New layer
@@ -189,7 +191,8 @@ module SpikingNeuralEvolution
                         UInt32(120),   # Max number of random population
                         UInt16(1),     # Min number of random hidden layers
                         UInt16(3),      # Max number of random hidden layers
-                        MaxIterations
+                        MaxIterations,
+                        1
                     ),
                     MutationProbabilities(
                         0.008,  # New layer
