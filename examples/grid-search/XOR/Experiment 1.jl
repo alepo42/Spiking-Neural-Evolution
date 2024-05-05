@@ -38,7 +38,8 @@ results_ts = ThreadSafeDict()
                 UInt32(population),    # Max number of random population
                 UInt16(lay_min),   # Min number of random hidden layers
                 UInt16(lay_max),    # Max number of random hidden layers
-                SpikingNeuralEvolution.MaxIterations
+                SpikingNeuralEvolution.MaxIterations,
+                1.0
             )  
             histories = Evolve(XOR, n, evolution_parameters)
 

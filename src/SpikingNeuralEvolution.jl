@@ -112,7 +112,7 @@ module SpikingNeuralEvolution
             iter += 1
         end
         
-        return best_circuit, max_fitness_history, Int16(iteration_of_max_fitness)
+        return best_circuit, max_fitness_history, Int16(iteration_of_max_fitness), simulations
    end
     
    #TODO da commentare

@@ -35,12 +35,13 @@ results_ts = ThreadSafeDict()
             # These parameters have been fixed from the previous phase
             evolution_parameters = EvolutionParameters(
                 UInt32(20),    # How many simulations
-                UInt32(500),  # How many iterations per simulation
+                UInt32(500),   # How many iterations per simulation
                 UInt32(100),   # Min number of random population
                 UInt32(100),   # Max number of random population
                 UInt16(2),     # Min number of random hidden layers
                 UInt16(2),     # Max number of random hidden layers
-                SpikingNeuralEvolution.MaxIterations
+                SpikingNeuralEvolution.MaxIterations,  # Stopping criteria
+                1.0            # Percentage of examples to consider
             )  
 
             mutation_probabilities = MutationProbabilities(

@@ -293,9 +293,9 @@ module SNPCircuit
     
         possible_rules = collect(1:15)[possible_rules[1:num_rules]]
 
-        if rand() > 0.5
-            push!(possible_rules, 0)
-        end
+        #if rand() > 0.5
+        #    push!(possible_rules, 0)
+        #end
     
         return Neuron(possible_rules, possible_input_lines, 0)
     end
